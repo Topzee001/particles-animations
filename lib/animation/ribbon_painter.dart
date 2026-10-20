@@ -48,12 +48,20 @@ class RibbonPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height * 0.48);
     final cosTilt = math.cos(scene.tilt);
     final sinTilt = math.sin(scene.tilt);
-    // The minus sign makes violet rotate opposite to gold.
-    final rotations = <double>[
-      scene.rotation + scene.orbit + 0.3,
-      // π starts violet half a turn away; 0.3 sets the initial view angle.
-      -scene.rotation + scene.orbit + math.pi + 0.3,
-    ];
+    // At the default view: +1 is clockwise, -1 is anticlockwise.
+    const rotationDirection = -1.0;
+    // Both arrows share the same movement and drag offset.
+    final sharedAngle = rotationDirection * scene.rotation + scene.orbit + 0.3;
+
+    // Violet stays exactly half a turn away from gold.
+    final rotations = <double>[sharedAngle, sharedAngle + math.pi];
+
+    // // The minus sign makes violet rotate opposite to gold.
+    // final rotations = <double>[
+    //   scene.rotation + scene.orbit + 0.3,
+    //   // π starts violet half a turn away; 0.3 sets the initial view angle.
+    //   scene.rotation + scene.orbit + math.pi + 0.3,
+    // ];
     // Compute shared trigonometry once per ribbon, not once per particle.
     final cosines = rotations.map(math.cos).toList();
     final sines = rotations.map(math.sin).toList();
@@ -64,9 +72,12 @@ class RibbonPainter extends CustomPainter {
       // Rendered position = home position + scatter vector × spring value.
       final localX = particle.x + particle.scatterX * scatter;
       final localY = particle.y + particle.scatterY * scatter;
-      // Mirror violet's geometry so its arrowhead points the other way too.
-      final direction = particle.ribbon == 0 ? 1 : -1;
-      final localZ = (particle.z + particle.scatterZ * scatter) * direction;
+      // // Mirror violet's geometry so its arrowhead points the other way too.
+      // final direction = particle.ribbon == 0 ? 1 : -1;
+      // final localZ = (particle.z + particle.scatterZ * scatter) * direction;
+      // Give both arrowhwads the same winding and match their travel direction.
+      final localZ =
+          (particle.z + particle.scatterZ * scatter) * rotationDirection;
 
       // Rotate around the vertical axis, then tilt toward the camera.
       final c = cosines[particle.ribbon];

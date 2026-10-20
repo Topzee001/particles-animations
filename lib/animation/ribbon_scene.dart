@@ -49,8 +49,13 @@ class RibbonScene extends ChangeNotifier {
   /// Number of spring response groups shared by the particles.
   static const int channelCount = 12;
 
-  /// Angular span per arrow in radians; 1.72π is about 310 degrees.
-  static const double arrowLength = math.pi * 1.72;
+  /// Extra arc beyond half a circle, in radians.
+  static const double arrowOverlap = 0.17;
+
+  /// Equal half-circle arrows with a small tip-to-tail overlap.
+  static const double arrowLength = math.pi + arrowOverlap;
+  // /// Angular span per arrow in radians; 1.72π is about 310 degrees.
+  // static const double arrowLength = math.pi * 1.72;
 
   /// Angular span of the triangular head, in radians.
   static const double headLength = 0.64;
@@ -222,8 +227,10 @@ class RibbonScene extends ChangeNotifier {
       particles.add(
         RibbonParticle(
           x: x,
-          // Place gold slightly above violet in the current design.
-          y: y + (ribbon == 0 ? -0.045 : 0.045),
+          // // Place gold slightly above violet in the current design.
+          // y: y + (ribbon == 0 ? -0.045 : 0.045),
+          // Keep both arrows at the same height.
+          y: y,
           z: z,
           scatterX:
               x * (0.5 + random.nextDouble()) +
